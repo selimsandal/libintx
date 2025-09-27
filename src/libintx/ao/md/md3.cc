@@ -32,7 +32,7 @@ namespace libintx::md {
     auto p = make_basis<T>(basis(0), bra, Batch, p_allocator);
     p.Batch = Batch;
 
-#pragma omp parallel num_threads(this->num_threads);
+#pragma omp parallel num_threads(this->num_threads)
     {
 
       // int K = nprim(a)*nprim(b);
@@ -51,7 +51,7 @@ namespace libintx::md {
           basis(1), basis(2),
           { ket[kl] }, nullptr,
           Phase<int>{-1},
-          Batch, q_allocator
+          1, q_allocator
         );
         std::unique_ptr<Kernel> kernel;
         jump_table(

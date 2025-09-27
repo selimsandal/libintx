@@ -220,7 +220,7 @@ namespace libintx::md {
         for (int k = 0; k < K; ++k) {
           auto &r = center(Ai);
           auto [e,C] = primitive(Ai,k);
-          allocator[i] = { e, C, r, 1.0/(2*e) };
+          allocator[k + i*K] = { e, C, r, 1.0/(2*e) };
         }
       }
     }

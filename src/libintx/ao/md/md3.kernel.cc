@@ -162,6 +162,10 @@ libintx_unroll(12+1)
               return q_x[ix][iq];
             };
 
+	    if constexpr (std::is_scalar_v<simd_t>) {
+	      if (!p.C) continue;
+	    }
+
             simd_t R[nherm2(X+C+D)] = {};
             compute_r1<X,C+D>(p,q,R);
             compute_x_q<X,C+D,simd_t>(R,U);
@@ -210,6 +214,9 @@ libintx_unroll(12+1)
           auto PQ = bra.hermite(i,0)->r - q.r;
           for (int kp = 0; kp < bra.K; ++kp) {
             auto &p = *bra.hermite(i,kp);
+	    if constexpr (std::is_scalar_v<simd_t>) {
+	      if (!p.C) continue;
+	    }
             compute_sx<Bra,Ket,simd_t>(
               p,q,PQ,
               [&](auto i, auto si) {
@@ -224,7 +231,6 @@ libintx_unroll(12+1)
           };
           r1::visit<X+Ket>(f, PQ, r0);
         }
-
 
         union {
           simd_t data[NQ][NX][Batch];

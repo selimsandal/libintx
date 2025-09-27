@@ -255,7 +255,7 @@ libintx_unroll (455)
         NAB, ncd, NP,
         1.0,
         reinterpret_cast<const double*>(E), NAB,
-        reinterpret_cast<const double*>(pCD), NP,
+        reinterpret_cast<const double*>(pCD), std::size(pCD[0]),
         1.0, reinterpret_cast<double*>(ABCD), NAB
       );
       goto hermite_to_pure;
