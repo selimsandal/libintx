@@ -42,9 +42,7 @@ jobs:
       run: |
         cmake --build . --target all all.tests
 
-    # - name: Test
-    #   working-directory: ${{github.workspace}}/build
-    #   run: |
-    #     cmake --build . --target libintx.test
-    #     cmake --build . --target check-tiledarray
-    #     ctest -C $${{matrix.build_type}}
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: |
+        ctest --output-on-failure -C ${{matrix.build_type}}
