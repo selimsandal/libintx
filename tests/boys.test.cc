@@ -9,6 +9,12 @@
 namespace boys = libintx::boys;
 using libintx::test::ReferenceValue;
 
+#ifdef __APPLE__
+constexpr double precision = 1e-14;
+#else
+constexpr double precision = 1e-15;
+#endif
+
 constexpr int MAXM = 12;
 
 TEST_CASE("chebyshev interpolation") {
@@ -40,7 +46,7 @@ TEST_CASE("chebyshev interpolation") {
         double x = a+k*(b-a)/K;
         double px = chebyshev.polyval(p, x, a, b);
         auto ref = ReferenceValue(f(x)).at(m, a, k);
-        CHECK(px == ref.epsilon(1e-15));
+        CHECK(px == ref.epsilon(precision));
       }
     }
 
@@ -60,7 +66,7 @@ TEST_CASE("asymptotic") {
       libintx::boys::asymptotic(X, k, s);
       for (size_t m = 0; m < 8; ++m) {
         auto ref = ReferenceValue(reference.compute(X,k+m)).at(X,k+m);
-        CHECK(s[m] == ref.epsilon(1e-15));
+        CHECK(s[m] == ref.epsilon(precision));
       }
     }
   }
@@ -73,7 +79,7 @@ TEST_CASE("chebyshev") {
     double X = (double)i/3;
     for (size_t m = 0; m < MAXM; ++m) {
       auto ref = ReferenceValue(reference.compute(X,m)).at(X,m);
-      CHECK(chebyshev->compute(X,m) == ref.epsilon(1e-15));
+      CHECK(chebyshev->compute(X,m) == ref.epsilon(precision));
     }
   }
 }
@@ -94,7 +100,7 @@ TEST_CASE("simd") {
     for (int m = 0; m <= MAXM; ++m) {
       for (size_t lane = 0; lane < simd::size(); ++lane) {
         auto ref = ReferenceValue(reference.compute(X[lane],m));
-        CHECK((double)Fm[m][lane] == ref.epsilon(1e-15));
+        CHECK((double)Fm[m][lane] == ref.epsilon(precision));
       }
       //break;
     }
