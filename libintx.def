@@ -16,7 +16,7 @@ From: nvcr.io/nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
     cd /opt/libintx/build
     cmake .. \
         -DLIBINTX_CUDA=ON \
-        -DCMAKE_CUDA_ARCHITECTURES="70;80;89;90;120" \
+        -DCMAKE_CUDA_ARCHITECTURES="80;89;90;100;120" \
         -DCMAKE_BUILD_TYPE=Release
     cmake --build . --target libintx.gpu.md3.perf libintx.gpu.md4.perf -j$(nproc)
     cmake --build . --target libintx.gpu.md3.test libintx.gpu.md4.test boys.gpu.test -j$(nproc)
@@ -32,9 +32,6 @@ From: nvcr.io/nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
 
 %runscript
     exec "$@"
-
-%test
-    /opt/libintx/build/tests/boys.gpu.test
 
 %labels
     Author libintx

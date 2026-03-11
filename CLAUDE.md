@@ -26,7 +26,7 @@ cmake --build build -j$(nproc)
 
 - `LIBINTX_CUDA=ON` — Enable CUDA backend
 - `LIBINTX_HIP=ON` — Enable HIP/ROCm backend
-- `CMAKE_CUDA_ARCHITECTURES` — Target GPU SM versions (e.g. `"70;80;89;90;120"` or `"native"`)
+- `CMAKE_CUDA_ARCHITECTURES` — Target GPU SM versions (e.g. `"80;89;90;100;120"` or `"native"`)
 - `LIBINTX_MAX_L` — Max angular momentum L (default: 4, i.e. up to g-functions)
 - `LIBINTX_MAX_X` — Max auxiliary basis L for 3-center integrals (default: 6)
 - `LIBINTX_SIMD=OFF` — Disable experimental SIMD support
