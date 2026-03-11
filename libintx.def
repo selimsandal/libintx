@@ -6,6 +6,7 @@ From: nvcr.io/nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
         cmake \
         g++ \
         make \
+        jq \
         libopenblas-dev \
         liblapacke-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -31,7 +32,48 @@ From: nvcr.io/nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
     export PATH=/opt/libintx/build/tests:$PATH
 
 %runscript
-    exec "$@"
+    OUTDIR="${LIBINTX_RESULTS:-./results}"
+    mkdir -p "$OUTDIR"
+
+    GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)
+    GPU_DRIVER=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -1)
+    GPU_MEMORY=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits | head -1)
+    GPU_SLUG=$(echo "$GPU_NAME" | tr ' ' '_')
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    OUTFILE="${OUTDIR}/${GPU_SLUG}_${TIMESTAMP}.json"
+
+    OUTPUT=$("$@" 2>&1)
+    EXIT_CODE=$?
+
+    echo "$OUTPUT"
+
+    jq -n \
+      --arg gpu "$GPU_NAME" \
+      --arg driver "$GPU_DRIVER" \
+      --arg memory_mb "$GPU_MEMORY" \
+      --arg date "$(date -Iseconds)" \
+      --arg hostname "$(hostname)" \
+      --arg command "$*" \
+      --argjson exit_code "$EXIT_CODE" \
+      --arg output "$OUTPUT" \
+      '{
+        gpu: {
+          name: $gpu,
+          driver: $driver,
+          memory_mb: ($memory_mb | tonumber)
+        },
+        system: {
+          hostname: $hostname,
+          date: $date
+        },
+        benchmark: {
+          command: $command,
+          exit_code: $exit_code,
+          output: $output
+        }
+      }' > "$OUTFILE"
+
+    echo "Results saved to: $OUTFILE" >&2
 
 %labels
     Author libintx

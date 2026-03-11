@@ -35,7 +35,6 @@ auto run(
 
     gpuStream_t stream = 0;
     md.engine = libintx::gpu::integral_engine<4>(bra, ket, stream);
-    md.engine->max_memory = 2ul*1024*1024*1024;
     md.engine->compute(Coulomb, ijs, kls, buffer.data(), dims);
     libintx::gpu::stream::synchronize(stream);
     {
