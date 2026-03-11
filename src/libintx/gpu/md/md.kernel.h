@@ -278,7 +278,8 @@ namespace libintx::gpu::md::kernel {
             auto p = p_orbitals[ip];
             hermite_to_pure<C,D>(
               [&](auto &&q) {
-                return r[index2(p+q)];
+                constexpr auto q_orb = cartesian::orbitals<C+D>()[q.value];
+                return r[index2(p+q_orb)];
               },
               [&](auto c, auto d, auto u) {
                 constexpr int phase = ((C+D)%2 == 0 ? +1 : -1);
@@ -330,7 +331,7 @@ namespace libintx::gpu::md::kernel {
 
             hermite_to_cartesian<X>(
               inv_2_p,
-              [&](auto p) -> const double& { return pCD[herm::index1(p)][icd]; },
+              [&](auto px, auto py, auto pz) -> const double& { return pCD[herm::index1(px,py,pz)][icd]; },
               [&](auto p) -> double& { return pCD[herm::index1(p)][icd]; }
             );
 
@@ -591,7 +592,8 @@ namespace libintx::gpu::md::kernel {
           if constexpr (!hermite_to_pure_too_complicated(C,D)) {
             hermite_to_pure<C,D>(
               [&](auto &&q) {
-                return R[herm::index2(p+q)][threadIdx.x];
+                constexpr auto q_orb = cartesian::orbitals<C+D>()[q.value];
+                return R[herm::index2(p+q_orb)][threadIdx.x];
               },
               [&](auto &&c, auto &&d, auto u) {
                 V[iy][index(c) + index(d)*npure(C)] += phase*u*cd.inv_2_exp;
@@ -670,8 +672,8 @@ namespace libintx::gpu::md::kernel {
             }
             hermite_to_cartesian<X>(
               inv_2_p,
-              [&](auto p) -> const double& {
-                return P[herm::index1(p)][iy][threadIdx.x];
+              [&](auto px, auto py, auto pz) -> const double& {
+                return P[herm::index1(px,py,pz)][iy][threadIdx.x];
               },
               [&](auto p) -> double& { return U[cart::index(p)]; }
             );

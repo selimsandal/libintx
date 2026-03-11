@@ -330,9 +330,10 @@ namespace libintx::gpu::md::kernel {
           if constexpr (NCD <= 49) {
             hermite_to_pure<Ket::First,Ket::Second>(
               [&](auto q) {
-                assert(index2(p+q) < NH);
-                return r[cartesian::index(q)];
-                //return R1(threadIdx.x, index2(p+q), blockIdx.x, kl, k);
+                constexpr auto q_orb = cartesian::orbitals<Ket::First+Ket::Second>()[q.value];
+                assert(index2(p+q_orb) < NH);
+                return r[cartesian::index(q_orb)];
+                //return R1(threadIdx.x, index2(p+q_orb), blockIdx.x, kl, k);
               },
               [&](auto c, auto d, auto u) {
                 V[index(c) + index(d)*NC] += inv_2_q*u;
@@ -436,7 +437,8 @@ namespace libintx::gpu::md::kernel {
           }
           hermite_to_pure<Bra::First,Bra::Second>(
             [&](auto &&p) {
-              return r[cart::index(p)];
+              constexpr auto p_orb = cartesian::orbitals<Bra::First+Bra::Second>()[p.value];
+              return r[cart::index(p_orb)];
             },
             [&](auto &&i, auto &&j, auto &&u) {
               int iab = index(i) + index(j)*NA;
@@ -618,12 +620,13 @@ namespace libintx::gpu::md::kernel {
             for (int k = 0; k < nk; ++k) {
               double inv_2_q = phase*shmem[k].cd.inv_2_exp;
               hermite_to_pure<Ket::First,Ket::Second>(
+                [&](auto &&q) {
+                  constexpr auto q_orb = cartesian::orbitals<Ket::First+Ket::Second>()[q.value];
+                  return shmem[k].R[herm::index2(p+q_orb)];
+                },
                 [&](auto &&c, auto &&d, auto &&v) {
                   int icd = index(c) + index(d)*npure(Ket::First);
                   V[icd] += inv_2_q*v;
-                },
-                [&](auto &&q) {
-                  return shmem[k].R[herm::index2(p+q)];
                 }
               );
             }

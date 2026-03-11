@@ -3,7 +3,9 @@
 
 #include "libintx/shell.h"
 #include "libintx/utility.h"
+#if !defined(__CUDACC__) && !defined(__HIPCC__)
 #include "libintx/simd.h"
+#endif
 
 #include <chrono>
 #include <random>

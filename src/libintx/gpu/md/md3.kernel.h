@@ -238,8 +238,8 @@ namespace libintx::gpu::md::kernel {
         // }
         hermite_to_cartesian<X>(
           inv_2_p,
-          [&](auto &&p) -> const double& {
-            return pCD[herm::index1(p)][icd_batch];
+          [&](auto px, auto py, auto pz) -> const double& {
+            return pCD[herm::index1(px,py,pz)][icd_batch];
           },
           [&](auto &&p) -> double& { return U[cart::index(p)]; }
         );

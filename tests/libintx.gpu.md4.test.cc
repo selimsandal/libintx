@@ -3,6 +3,7 @@
 
 #include "libintx/ao/md/reference.h"
 #include "libintx/pure.transform.h"
+#include "libintx/pure.reference.h"
 
 #include "libintx/gpu/api/api.h"
 #include "libintx/gpu/engine.h"

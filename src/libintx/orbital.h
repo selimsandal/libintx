@@ -292,7 +292,7 @@ constexpr auto index1(const Tx &lx, const Ty &ly, const Tz &lz) {
   for (int i = L%2; i < L; i += 2) {
     idx += cartesian::ncart(i);
   }
-  return (idx + cartesian::index(lx,ly,lz));
+  return (idx + cartesian::index(int(lx),int(ly),int(lz)));
 }
 
 template<class Orbital>

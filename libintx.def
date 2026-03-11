@@ -1,0 +1,41 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
+
+%post
+    apt-get update && apt-get install -y --no-install-recommends \
+        cmake \
+        g++ \
+        make \
+        libopenblas-dev \
+        liblapacke-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+    mkdir -p /opt/libintx/build
+    cp -r /mnt/src/* /opt/libintx/
+
+    cd /opt/libintx/build
+    cmake .. \
+        -DLIBINTX_CUDA=ON \
+        -DCMAKE_CUDA_ARCHITECTURES="70;80;89;90;120" \
+        -DCMAKE_BUILD_TYPE=Release
+    cmake --build . --target libintx.gpu.md3.perf libintx.gpu.md4.perf -j$(nproc)
+    cmake --build . --target libintx.gpu.md3.test libintx.gpu.md4.test boys.gpu.test -j$(nproc)
+
+    rm -rf /opt/libintx/build/CMakeFiles
+    rm -rf /opt/libintx/build/src/libintx/gpu/CMakeFiles
+
+%files
+    . /mnt/src
+
+%environment
+    export PATH=/opt/libintx/build/tests:$PATH
+
+%runscript
+    exec "$@"
+
+%test
+    /opt/libintx/build/tests/boys.gpu.test
+
+%labels
+    Author libintx
+    Description libintx GPU benchmarks

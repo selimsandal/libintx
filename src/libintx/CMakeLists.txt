@@ -19,6 +19,10 @@ endif()
 
 if (TARGET LAPACK::LAPACK)
   target_link_libraries(libintx.blas LAPACK::LAPACK)
+  find_library(LAPACKE_LIBRARY lapacke)
+  if (LAPACKE_LIBRARY)
+    target_link_libraries(libintx.blas ${LAPACKE_LIBRARY})
+  endif()
 endif()
 
 install(

@@ -18,25 +18,45 @@ namespace libintx::gpu {
   template<>
   struct IntegralEngine<3> : libintx::ao::IntegralEngine<3> {
     virtual ~IntegralEngine() = default;
-    using libintx::ao::IntegralEngine<3>::compute;
-    // virtual void compute(
-    //   const std::vector<Index1> &bra,
-    //   const std::vector<Index2> &ket,
-    //   double*,
-    //   std::array<size_t,2>
-    // ) = 0;
+    virtual void compute(
+      Operator,
+      const std::vector<Index1> &bra,
+      const std::vector<Index2> &ket,
+      double*,
+      const std::array<size_t,2>&
+    ) = 0;
+    void compute(
+      Operator op,
+      const std::vector<Index1> &bra,
+      const std::vector<Index2> &ket,
+      BraKet<const double*>,
+      double *V,
+      const std::array<size_t,2> &dims
+    ) override {
+      this->compute(op, bra, ket, V, dims);
+    }
   };
 
   template<>
   struct IntegralEngine<4> : libintx::ao::IntegralEngine<4> {
     virtual ~IntegralEngine() = default;
-    using libintx::ao::IntegralEngine<4>::compute;
-    // virtual void compute(
-    //   const std::vector<Index2> &bra,
-    //   const std::vector<Index2> &ket,
-    //   double*,
-    //   std::array<size_t,2>
-    // ) = 0;
+    virtual void compute(
+      Operator,
+      const std::vector<Index2> &bra,
+      const std::vector<Index2> &ket,
+      double*,
+      const std::array<size_t,2>&
+    ) = 0;
+    void compute(
+      Operator op,
+      const std::vector<Index2> &bra,
+      const std::vector<Index2> &ket,
+      BraKet<const double*>,
+      double *V,
+      const std::array<size_t,2> &dims
+    ) override {
+      this->compute(op, bra, ket, V, dims);
+    }
     size_t max_memory = 0;
   };
 
